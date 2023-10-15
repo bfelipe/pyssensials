@@ -1,3 +1,4 @@
+import collections
 import unittest
 
 import collection
@@ -126,3 +127,61 @@ class CollectionTestCase(unittest.TestCase):
         assert ol.pop_at(0)
         assert ol.is_empty() is True
         assert ol.size() == 0
+
+    def test_hash_map(self):
+        with self.assertRaises(collection.InvalidTableSizeError):
+            collection.HashMap(1024)
+
+        hm = collection.HashMap()
+        assert type(hm) is collection.HashMap
+        assert hm.is_empty() is True
+        assert hm.size() == 0
+        assert hm.capacity() == 499
+        assert hm.contains('cat') is False
+        assert hm.contains(123) is False
+        assert hm.get('cat') is None
+        assert hm.get(123) is None
+        hm.put('cat', 54)
+        hm.put('dog', 26)
+        hm.put('lion', 93)
+        hm.put('tiger', 17)
+        hm.put('bird', 77)
+        hm.put('cow', 31)
+        hm.put(44, 'goat')
+        hm.put(55, 'pig')
+        hm.put(20, 'chicken')
+        assert hm.is_empty() is False
+        assert hm.size() == 9
+        assert hm.get('cat') == 54
+        assert hm.get('dog') == 26
+        assert hm.get('lion') == 93
+        assert hm.get('tiger') == 17
+        assert hm.get('bird') == 77
+        assert hm.get('cow') == 31
+        assert hm.get(44) == 'goat'
+        assert hm.get(55) == 'pig'
+        assert hm.get(20) == 'chicken'
+        hm.put('cat', 100)
+        hm.put(44, 'medusa')
+        assert hm.get('cat') == 100
+        assert hm.get(44) == 'medusa'
+        hm.delete('cat')
+        hm.delete(44)
+        assert hm.get('cat') is None
+        assert hm.get(44) is None
+        assert hm.size() == 7
+        hm.delete('dog')
+        hm.delete('lion')
+        hm.delete('tiger')
+        hm.delete('bird')
+        hm.delete('cow')
+        hm.delete(55)
+        hm.delete(20)
+        assert hm.get('dog') is None
+        assert hm.get('lion') is None
+        assert hm.get('tiger') is None
+        assert hm.get('bird') is None
+        assert hm.get('cow') is None
+        assert hm.get(55) is None
+        assert hm.get(20) is None
+        assert hm.size() == 0

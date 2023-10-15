@@ -1,3 +1,5 @@
+import hashing
+
 class Stack:
 
     def __init__(self):
@@ -452,33 +454,148 @@ class OrderedList:
         return ' -> '.join(result)
 
 
-class HashMap:
+class InvalidTableSizeError(Exception):
+    pass
 
-    def __init__(self, size):
-        self.size = size
-        self.slots = [None] * self.size
-        self.data = [None] * self.size
+
+class HashMap:
+    """
+        In this implementation we are using probing technique to allocate
+        each key/value in a unique slot.
+        Keep in mind that if the load factor (λ) is small, collisions is also
+        have a small chance to occur.
+
+        Load factor: λ = number_of_item / stable_size
+
+        When a load factor is large (close to the table_size), collisions are
+        more prone to occur, this make a new hash (index) to be calculated.
+        If you are about to clear the entire HashMap using delete() function
+        you probably going to have weird behavior since you are more like to
+        come across a None slot before reaching your desired one.
+
+        It is recommended you make your load factor ALWAYS bigger than the number or
+        key/value pairs.
+    """
+    def __init__(self, table_size: int = 499):
+        self.table_size = self._check_table_size(table_size)
+        self.keys = [None] * self.table_size
+        self.values = [None] * self.table_size
+        self.probe = 1
+
+    @staticmethod
+    def _to_ord(key):
+        if type(key) is str:
+            tokens = [str(ord(letter)) for letter in key]
+            return int(''.join(tokens))
+        return key
 
     def put(self, key, value):
-        pass
+        index = hashing.reminder_hash(self._to_ord(key), self.table_size)
+        if self.keys[index] is None:
+            self.keys[index] = key
+            self.values[index] = value
+        else:
+            if self.keys[index] == key:
+                self.values[index] = value
+            else:
+                index = hashing.reminder_hash(index + self.probe, self.table_size)
+                while self.keys[index] is not None and self.keys[index] != key:
+                    index = hashing.reminder_hash(index + self.probe, self.table_size)
+                if self.keys[index] is None:
+                    self.keys[index] = key
+                    self.values[index] = value
+                else:
+                    self.values[index] = value
 
     def get(self, key):
-        pass
+        start_index = hashing.reminder_hash(self._to_ord(key), self.table_size)
+        index = start_index
+        value = None
+        stop = False
+        found = False
+        while self.keys[index] is not None and not found and not stop:
+            if self.keys[index] == key:
+                value = self.values[index]
+                found = True
+            else:
+                index = hashing.reminder_hash(index + self.probe, self.table_size)
+                if index == start_index:
+                    stop = True
+        return value
 
     def delete(self, key):
-        pass
+        start_index = hashing.reminder_hash(self._to_ord(key), self.table_size)
+        index = start_index
+        stop = False
+        found = False
+        while self.keys[index] is not None and not found and not stop:
+            if self.keys[index] == key:
+                self.keys[index] = None
+                self.values[index] = None
+                found = True
+            else:
+                index = hashing.reminder_hash(index + self.probe, self.table_size)
+                if index == start_index:
+                    stop = True
 
     def is_empty(self):
-        pass
+        result = True
+        position = 0
+        stop = False
+        while position <= len(self.keys) - 1 and not stop:
+            if self.keys[position] is not None:
+                result = False
+                stop = True
+            else:
+                position += 1
+        return result
 
     def size(self):
-        pass
+        total = 0
+        for index, _ in enumerate(self.keys):
+            if self.keys[index] is not None:
+                total += 1
+        return total
 
     def capacity(self):
-        pass
+        return self.table_size
 
     def contains(self, key):
-        pass
+        key = self._to_ord(key)
+        start_index = hashing.reminder_hash(key, self.table_size)
+        index = start_index
+        stop = False
+        found = False
+        while self.keys[index] is not None and not found and not stop:
+            if self.keys[index] == key:
+                found = True
+            else:
+                index = hashing.reminder_hash(index + self.probe, self.table_size)
+                if index == start_index:
+                    stop = True
+        return found
+
+    @staticmethod
+    def _check_table_size(table_size):
+        is_prime = True
+        start = 2
+
+        while start <= table_size // 2:
+            if table_size % start == 0:
+                is_prime = False
+                break
+            else:
+                start += 1
+
+        if not is_prime:
+            raise InvalidTableSizeError('Table size must be a prime number')
+        return table_size
 
     def __repr__(self):
-        pass
+        if self.is_empty():
+            return 'HashMap: []'
+        items = []
+        for i, _ in enumerate(self.keys):
+            if self.keys[i] is not None:
+                items.append('(key: %s, value: %s)' % (self.keys[i], self.values[i]))
+        return 'HashMap: %s' % items
