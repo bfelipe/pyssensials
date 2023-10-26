@@ -20,3 +20,16 @@ class BinaryTreeTestCase(unittest.TestCase):
         tree.set_root(left_child, 9)
         assert tree.get_left(t) == [9, [4, [], []], []]
         assert t == [3, [9, [4, [], []], []], [7, [], [6, [], []]]]
+
+    def test_BinaryTree(self):
+        bt = tree.BinaryTree()
+        assert type(bt) is tree.BinaryTree
+        assert bt.get_root() is None
+        bt.set_root('a')
+        assert bt.get_root() == 'a'
+        assert bt.get_left() is None
+        assert bt.get_right() is None
+        bt.insert_left('b')
+        assert bt.get_left().get_root() == 'b'
+        bt.insert_right('c')
+        assert bt.get_right().get_root() == 'c'
