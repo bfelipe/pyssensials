@@ -1,4 +1,5 @@
 import unittest
+import operator
 
 import tree
 
@@ -33,3 +34,51 @@ class BinaryTreeTestCase(unittest.TestCase):
         assert bt.get_left().get_root() == 'b'
         bt.insert_right('c')
         assert bt.get_right().get_root() == 'c'
+
+
+    def test_parse_BinaryTree(self):
+        tokens = '( ( 10 + 5 ) * 3 )'.split()
+        root = tree.BinaryTree()
+        token_stack = [root]
+        current_node = root
+
+        for i in tokens:
+            if i == '(':
+                current_node.insert_left('')
+                token_stack.append(current_node)
+                current_node = current_node.get_left()
+            elif i in ['+', '-', '*', '/']:
+                current_node.set_root(i)
+                current_node.insert_right('')
+                token_stack.append(current_node)
+                current_node = current_node.get_right()
+            elif i == ')':
+                current_node = token_stack.pop()
+            else:
+                current_node.set_root(int(i))
+                parent = token_stack.pop()
+                current_node = parent
+
+        assert root.get_root() == '*'
+        assert root.get_left().get_root() == '+'
+        assert root.get_left().get_left().get_root() == 10
+        assert root.get_left().get_right().get_root() == 5
+        assert root.get_right().get_root() == 3
+
+        def evaluate(root):
+            opers = {
+                '+': operator.add,
+                '-': operator.sub,
+                '*': operator.mul,
+                '/': operator.truediv
+            }
+
+            left_child = root.get_left()
+            right_child = root.get_right()
+            if left_child and right_child:
+                operation = opers[root.get_root()]
+                return operation(evaluate(left_child), evaluate(right_child))
+            else:
+                return root.get_root()
+
+        assert evaluate(root) == 45

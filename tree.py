@@ -75,3 +75,24 @@ class BinaryTree:
         return '<Node key: %s, l: %s, r: %s>' % (self.key,
                                                  self.left_child,
                                                  self.right_child)
+
+
+def pre_order(t: BinaryTree):
+    if t:
+        print(t.get_root())
+        pre_order(t.get_left())
+        pre_order(t.get_right())
+
+
+def in_order(t: BinaryTree):
+    if t:
+        in_order(t.get_left())
+        print(t.get_root())
+        in_order(t.get_right())
+
+
+def post_order(t):
+    if t:
+        post_order(t.get_left())
+        post_order(t.get_right())
+        print(t.get_root())
