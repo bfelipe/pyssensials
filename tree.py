@@ -100,6 +100,33 @@ def post_order(t):
 
 class Heap:
 
+    def _percolate_up_from(self, index):
+        pass
+
+    def insert(self, data):
+        pass
+
+    def _percolate_down_from(self, index):
+        pass
+
+    def remove(self):
+        pass
+
+    def is_empty(self):
+        pass
+
+    def size(self):
+        pass
+
+    def clear(self):
+        pass
+
+    def build(self, items):
+        pass
+
+
+class MinHeap(Heap):
+
     def __init__(self, items: list = None):
         self.items = [0]
         self.current_size = 0
@@ -141,7 +168,7 @@ class Heap:
                 self.items[index] = tmp
             index = min_child_index
 
-    def remove_min(self):
+    def remove(self):
         result = self.items.pop(1)
         self.items.insert(1, self.items.pop())
         self.current_size -= 1
