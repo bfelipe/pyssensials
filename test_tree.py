@@ -82,31 +82,66 @@ class BinaryTreeTestCase(unittest.TestCase):
 
         assert evaluate(root) == 45
 
-    def test_min_heap(self):
-        mh = tree.MinHeap()
-        assert type(mh) is tree.MinHeap
-        assert mh.is_empty() is True
-        assert mh.size() == 0
-        assert mh.remove_min() == -1
-        assert mh.find_min() == -1
+    def test_MinHeap(self):
+        min_heap = tree.MinHeap()
+        assert type(min_heap) is tree.MinHeap
+        assert min_heap.is_empty() is True
+        assert min_heap.size() == 0
+        assert min_heap.remove_min() == -1
+        assert min_heap.find_min() == -1
 
-        data = [9, 6, 5, 2, 3]
+        data = [9, 6, 5, 3, 2]
 
-        mh.build(data)
-        assert mh.is_empty() is False
-        assert mh.size() == 5
-        assert mh.find_min() == 2
-        mh.clear()
-        assert mh.remove_min() == -1
-        assert mh.find_min() == -1
-        assert mh.is_empty() is True
-        assert mh.size() == 0
+        min_heap.build(data)
+        assert min_heap.is_empty() is False
+        assert min_heap.size() == 5
+        assert min_heap.find_min() == 2
+        min_heap.clear()
+        assert min_heap.remove_min() == -1
+        assert min_heap.find_min() == -1
+        assert min_heap.is_empty() is True
+        assert min_heap.size() == 0
+        position = 0
         for item in data:
-            mh.insert(item)
-        assert mh.is_empty() is False
-        assert mh.size() == 5
+            min_heap.insert(item)
+            assert min_heap.find_min() == data[position]
+            position += 1
+        assert min_heap.is_empty() is False
+        assert min_heap.size() == 5
         for _ in data:
-            min_val = mh.find_min()
-            assert mh.remove_min() == min_val
-        assert mh.is_empty() is True
-        assert mh.size() == 0
+            min_val = min_heap.find_min()
+            assert min_heap.remove_min() == min_val
+        assert min_heap.is_empty() is True
+        assert min_heap.size() == 0
+
+    def test_MaxHeap(self):
+        max_heap = tree.MaxHeap()
+        assert type(max_heap) is tree.MaxHeap
+        assert max_heap.is_empty() is True
+        assert max_heap.size() == 0
+        assert max_heap.remove_max() == -1
+        assert max_heap.find_max() == -1
+
+        data = [2, 3, 5, 6, 9]
+
+        max_heap.build(data)
+        assert max_heap.is_empty() is False
+        assert max_heap.size() == 5
+        assert max_heap.find_max() == 9
+        max_heap.clear()
+        assert max_heap.remove_max() == -1
+        assert max_heap.find_max() == -1
+        assert max_heap.is_empty() is True
+        assert max_heap.size() == 0
+        position = 0
+        for item in data:
+            max_heap.insert(item)
+            assert max_heap.find_max() == data[position]
+            position += 1
+        assert max_heap.is_empty() is False
+        assert max_heap.size() == 5
+        for _ in data:
+            max_val = max_heap.find_max()
+            assert max_heap.remove_max() == max_val
+        assert max_heap.is_empty() is True
+        assert max_heap.size() == 0

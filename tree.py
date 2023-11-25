@@ -194,3 +194,76 @@ class MinHeap(Heap):
 
     def __repr__(self):
         return str(self.items)
+
+class MaxHeap(Heap):
+
+    def __init__(self, items: list = None):
+        self.items = [0]
+        self.current_size = 0
+        if items:
+            self.build(items)
+
+    def _percolate_up_from(self, index):
+        while index // 2 > 0:
+            if self.items[index] > self.items[index // 2]:
+                tmp = self.items[index // 2]
+                self.items[index // 2] = self.items[index]
+                self.items[index] = tmp
+            index //= 2
+
+    def insert(self, data):
+        self.items.append(data)
+        self.current_size += 1
+        self._percolate_up_from(self.current_size)
+
+    def find_max(self):
+        if not self.is_empty():
+            return self.items[1]
+        return -1
+
+    def _get_max_child_index(self, index):
+        if (index * 2 + 1) > self.current_size:
+            return index * 2
+        else:
+            if self.items[index * 2] > self.items[index * 2 + 1]:
+                return index * 2
+            return index * 2 + 1
+
+    def _percolate_down_from(self, index):
+        while (index * 2) <= self.current_size:
+            max_child_index = self._get_max_child_index(index)
+            if self.items[index] < self.items[max_child_index]:
+                tmp = self.items[max_child_index]
+                self.items[max_child_index] = self.items[index]
+                self.items[index] = tmp
+            index = max_child_index
+
+    def remove_max(self):
+        if not self.is_empty():
+            result = self.items.pop(1)
+            self.items.insert(1, self.items.pop())
+            self.current_size -= 1
+            self._percolate_down_from(1)
+            return result
+        return -1
+
+    def is_empty(self):
+        return self.items == [0]
+
+    def size(self):
+        return self.current_size
+
+    def clear(self):
+        self.items = [0]
+        self.current_size = 0
+
+    def build(self, items):
+        index = len(items) // 2
+        self.current_size = len(items)
+        self.items += items
+        while index > 0:
+            self._percolate_down_from(index)
+            index -= 1
+
+    def __repr__(self):
+        return str(self.items)
