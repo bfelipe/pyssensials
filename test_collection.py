@@ -1,4 +1,3 @@
-import collections
 import unittest
 
 import collection
@@ -185,28 +184,3 @@ class CollectionTestCase(unittest.TestCase):
         assert hm.get(55) is None
         assert hm.get(20) is None
         assert hm.size() == 0
-
-    def test_min_binary_heap(self):
-        h = collection.Heap()
-        assert type(h) is collection.Heap
-        assert h.is_empty() is True
-        assert h.size() == 0
-
-        data = [9, 6, 5, 2, 3]
-
-        h.build(data)
-        assert h.is_empty() is False
-        assert h.size() == 5
-        assert h.find_min() == 2
-        h.clear()
-        assert h.is_empty() is True
-        assert h.size() == 0
-        for item in data:
-            h.insert(item)
-        assert h.is_empty() is False
-        assert h.size() == 5
-        for _ in data:
-            min_val = h.find_min()
-            assert h.remove_min() == min_val
-        assert h.is_empty() is True
-        assert h.size() == 0

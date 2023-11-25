@@ -82,3 +82,28 @@ class BinaryTreeTestCase(unittest.TestCase):
                 return root.get_root()
 
         assert evaluate(root) == 45
+
+    def test_min_binary_heap(self):
+        h = tree.Heap()
+        assert type(h) is tree.Heap
+        assert h.is_empty() is True
+        assert h.size() == 0
+
+        data = [9, 6, 5, 2, 3]
+
+        h.build(data)
+        assert h.is_empty() is False
+        assert h.size() == 5
+        assert h.find_min() == 2
+        h.clear()
+        assert h.is_empty() is True
+        assert h.size() == 0
+        for item in data:
+            h.insert(item)
+        assert h.is_empty() is False
+        assert h.size() == 5
+        for _ in data:
+            min_val = h.find_min()
+            assert h.remove_min() == min_val
+        assert h.is_empty() is True
+        assert h.size() == 0
