@@ -109,9 +109,6 @@ class Heap:
     def _percolate_down_from(self, index):
         pass
 
-    def remove(self):
-        pass
-
     def is_empty(self):
         pass
 
@@ -149,7 +146,7 @@ class MinHeap(Heap):
     def find_min(self):
         if not self.is_empty():
             return self.items[1]
-        return None
+        return -1
 
     def _get_min_child_index(self, index):
         if (index * 2 + 1) > self.current_size:
@@ -168,12 +165,14 @@ class MinHeap(Heap):
                 self.items[index] = tmp
             index = min_child_index
 
-    def remove(self):
-        result = self.items.pop(1)
-        self.items.insert(1, self.items.pop())
-        self.current_size -= 1
-        self._percolate_down_from(1)
-        return result
+    def remove_min(self):
+        if not self.is_empty():
+            result = self.items.pop(1)
+            self.items.insert(1, self.items.pop())
+            self.current_size -= 1
+            self._percolate_down_from(1)
+            return result
+        return -1
 
     def is_empty(self):
         return self.items == [0]

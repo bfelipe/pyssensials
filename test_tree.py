@@ -87,6 +87,8 @@ class BinaryTreeTestCase(unittest.TestCase):
         assert type(mh) is tree.MinHeap
         assert mh.is_empty() is True
         assert mh.size() == 0
+        assert mh.remove_min() == -1
+        assert mh.find_min() == -1
 
         data = [9, 6, 5, 2, 3]
 
@@ -95,6 +97,8 @@ class BinaryTreeTestCase(unittest.TestCase):
         assert mh.size() == 5
         assert mh.find_min() == 2
         mh.clear()
+        assert mh.remove_min() == -1
+        assert mh.find_min() == -1
         assert mh.is_empty() is True
         assert mh.size() == 0
         for item in data:
@@ -103,6 +107,6 @@ class BinaryTreeTestCase(unittest.TestCase):
         assert mh.size() == 5
         for _ in data:
             min_val = mh.find_min()
-            assert mh.remove() == min_val
+            assert mh.remove_min() == min_val
         assert mh.is_empty() is True
         assert mh.size() == 0
