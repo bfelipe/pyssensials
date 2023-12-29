@@ -145,3 +145,145 @@ class BinaryTreeTestCase(unittest.TestCase):
             assert max_heap.remove_max() == max_val
         assert max_heap.is_empty() is True
         assert max_heap.size() == 0
+
+    def test_TreeNode(self):
+        parent = tree.TreeNode(3, 'red')
+        right = tree.TreeNode(5, 'blue', parent=parent)
+        left = tree.TreeNode(1, 'green', parent=parent)
+        parent.right_child = right
+        parent.left_child = left
+    
+        assert type(parent) is tree.TreeNode
+        assert parent.parent is None
+        assert parent.left_child == left
+        assert parent.right_child == right
+        assert parent.key == 3
+        assert parent.val == 'red'
+        assert parent.has_left_child() == left
+        assert parent.has_right_child() == right
+    
+        left_child = parent.left_child
+        right_child = parent.right_child
+    
+        assert left_child.is_left_child() is True
+        assert right_child.is_right_child() is True
+        assert parent.is_root() is True
+        assert parent.left_child.is_leaf() is True
+        assert parent.right_child.is_leaf() is True
+        assert bool(parent.has_any_child()) is True
+        assert bool(parent.has_both_children()) is True
+    
+        assert parent.find_successor().key == 5
+    
+        parent.left_child.right_child = tree.TreeNode(2, 'purple', parent=parent.left_child)
+        parent.right_child.left_child = tree.TreeNode(4, 'yellow', parent=parent.right_child)
+    
+        assert parent.find_successor().key == 4
+
+    def test_BinarySearchTree(self):
+        bst = tree.BinarySearchTree()
+        assert type(bst) is tree.BinarySearchTree
+
+        assert bst.root is None
+        assert len(bst) == 0
+
+        bst.put(3, 'blue')
+        assert len(bst) == 1
+        assert bst.get(3) == 'blue'
+
+        bst.put(3, 'red')
+        assert len(bst) == 1
+        assert bst.get(3) == 'red'
+
+        bst[5] = 'blue'
+        bst[1] = 'green'
+
+        assert len(bst) == 3
+        assert bst[5] == 'blue'
+        assert bst[1] == 'green'
+
+        contains_key_6 = False
+        if 6 in bst:
+            contains_key_6 = True
+        assert contains_key_6 is False
+
+        contains_key_1 = False
+        if 1 in bst:
+            contains_key_1 = True
+        assert contains_key_1 is True
+
+        bst.put(2, 'purple')
+        bst.put(4, 'yellow')
+
+        assert bst.get(2) == 'purple'
+        assert bst[4] == 'yellow'
+
+        assert len(bst) == 5
+
+        empty_bst = tree.BinarySearchTree()
+
+        with self.assertRaises(KeyError) as e:
+            empty_bst.delete(1)
+        self.assertEqual(str(e.exception), "'Key not found'")
+
+        with self.assertRaises(KeyError) as e:
+            del empty_bst[1]
+        self.assertEqual(str(e.exception), "'Key not found'")
+
+        assert empty_bst.get(1) is None
+        assert empty_bst[1] is None
+
+        bst.delete(3)
+        assert len(bst) == 4
+        assert bst[3] is None
+        assert bst[5] == 'blue'
+        assert bst[1] == 'green'
+        assert bst[2] == 'purple'
+        assert bst[4] == 'yellow'
+
+        del bst[2]
+        assert bst.get(2) is None
+        assert len(bst) == 3
+        assert bst[5] == 'blue'
+        assert bst[1] == 'green'
+        assert bst[4] == 'yellow'
+
+        del bst[1]
+        assert bst[1] is None
+        assert len(bst) == 2
+        assert bst[5] == 'blue'
+        assert bst[4] == 'yellow'
+
+        bst.delete(5)
+        assert bst.get(5) is None
+        assert len(bst) == 1
+        assert bst[4] == 'yellow'
+
+        bst.delete(4)
+        assert bst.get(4) is None
+        assert len(bst) == 0
+
+        assert bst.root is None
+        assert bst.size == 0
+
+        bst.put(3, 'red')
+        bst[5] = 'blue'
+        bst[1] = 'green'
+        bst.put(2, 'purple')
+        bst.put(4, 'yellow')
+
+        assert len(bst) == 5
+        assert bst[3] == 'red'
+        assert bst[5] == 'blue'
+        assert bst[1] == 'green'
+        assert bst[2] == 'purple'
+        assert bst[4] == 'yellow'
+
+        bst.clean()
+        assert len(bst) == 0
+        assert bst.root is None
+        assert bst[3] is None
+        assert bst[5] is None
+        assert bst[1] is None
+        assert bst[2] is None
+        assert bst[4] is None

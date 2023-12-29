@@ -195,6 +195,7 @@ class MinHeap(Heap):
     def __repr__(self):
         return str(self.items)
 
+
 class MaxHeap(Heap):
 
     def __init__(self, items: list = None):
@@ -267,3 +268,227 @@ class MaxHeap(Heap):
 
     def __repr__(self):
         return str(self.items)
+
+
+class TreeNode:
+
+    def __init__(self, key, val, left=None, right=None, parent=None):
+        self.key = key
+        self.val = val
+        self.left_child = left
+        self.right_child = right
+        self.parent = parent
+
+    def has_left_child(self):
+        return self.left_child
+
+    def has_right_child(self):
+        return self.right_child
+
+    def is_left_child(self):
+        return self.parent and self.parent.left_child == self
+
+    def is_right_child(self):
+        return self.parent and self.parent.right_child == self
+
+    def is_root(self):
+        return not self.parent
+
+    def is_leaf(self):
+        return not self.left_child or self.right_child
+
+    def has_any_child(self):
+        return self.left_child or self.right_child
+
+    def has_both_children(self):
+        return self.left_child and self.right_child
+
+    def _find_min(self):
+        current = self
+        while current.has_left_child():
+            current = current.left_child
+        return current
+
+    def find_successor(self):
+        successor = None
+        if self.has_right_child():
+            successor = self.right_child._find_min()
+        else:
+            if self.parent:
+                if self.is_left_child():
+                    successor = self.parent
+                else:
+                    self.parent.right_child = None
+                    successor = self.parent._find_successor()
+                    self.parent.right_child = self
+        return successor
+
+    def replace(self, key, val, left, right):
+        self.key = key
+        self.val = val
+        self.left_child = left
+        self.right_child = right
+        if self.has_left_child():
+            self.left_child.parent = self
+        if self.has_right_child():
+            self.right_child.parent = self
+
+    def splice_out(self):
+        if self.is_leaf():
+            if self.is_left_child():
+                self.parent.left_child = None
+            else:
+                self.parent.right_child = None
+        elif self.has_any_child():
+            if self.has_left_child():
+                if self.is_left_child():
+                    self.parent.left_child = self.left_child
+                else:
+                    self.parent.right_child = self.left_child
+                self.left_child.parent = self.parent
+            else:
+                if self.is_left_child():
+                    self.parent.left_child = self.right_child
+                else:
+                    self.parent.right_child = self.right_child
+                self.right_child.parent = self.parent
+
+    def __repr__(self):
+        return '<Node key: %s, val: %s, l: %s, r: %s>' % (self.key,
+                                                          self.val,
+                                                          self.left_child,
+                                                          self.right_child)
+
+
+class BinarySearchTree:
+
+    def __init__(self):
+        self.root = None
+        self.size = 0
+
+    def __len__(self):
+        return self.size
+
+    def _put(self, key, val, current):
+        update_key = False
+        if key == current.key:
+            current.val = val
+            update_key = True
+        elif key < current.key:
+            if current.has_left_child():
+                self._put(key, val, current.left_child)
+            else:
+                current.left_child = TreeNode(key, val, parent=current)
+        else:
+            if current.has_right_child():
+                self._put(key, val, current.right_child)
+            else:
+                current.right_child = TreeNode(key, val, parent=current)
+        return update_key
+
+    def put(self, key, val):
+        updated_key = False
+        if self.root:
+            updated_key = self._put(key, val, self.root)
+        else:
+            self.root = TreeNode(key, val)
+
+        if not updated_key:
+            self.size += 1
+
+    def __setitem__(self, k, v):
+        self.put(k, v)
+
+    def _get(self, key, current):
+        if not current:
+            return None
+        elif current.key == key:
+            return current
+        elif key < current.key:
+            return self._get(key, current.left_child)
+        else:
+            return self._get(key, current.right_child)
+
+    def get(self, key):
+        if self.root:
+            result = self._get(key, self.root)
+            return result.val if result else None
+        return None
+
+    def __getitem__(self, k):
+        return self.get(k)
+
+    def __contains__(self, k):
+        return bool(self._get(k, self.root))
+
+    def _remove_node_with_no_children(self, node: TreeNode):
+        if node.is_root():
+            self.root = None
+        elif node.is_left_child():
+            node.parent.left_child = None
+        else:
+            node.parent.right_child = None
+
+    def _remove_node_with_single_child(self, node: TreeNode):
+        if node.has_left_child():
+            if node.is_left_child():
+                node.left_child.parent = node.parent
+                node.parent.left_child = node.left_child
+            elif node.is_right_child():
+                node.left_child.parent = node.parent
+                node.parent.right_child = node.left_child
+            else:
+                node.replace(node.left_child.key,
+                             node.left_child.val,
+                             node.left_child.left_child,
+                             node.left_child.right_child)
+        else:
+            if node.is_left_child():
+                node.right_child.parent = node.parent
+                node.parent.left_child = node.left_child
+            elif node.is_right_child():
+                node.right_child.parent = node.parent
+                node.parent.right_child = node.right_child
+            else:
+                node.replace(node.right_child.key,
+                             node.right_child.val,
+                             node.right_child.left_child,
+                             node.right_child.right_child)
+
+    def _remove_node_with_both_children(self, node: TreeNode):
+        successor = node.find_successor()
+        successor.splice_out()
+        node.key = successor.key
+        node.val = successor.val
+
+    def _remove(self, node: TreeNode):
+        if not node.has_both_children():
+            self._remove_node_with_no_children(node)
+        elif node.has_both_children():
+            self._remove_node_with_both_children(node)
+        else:
+            self._remove_node_with_single_child(node)
+
+    def delete(self, key):
+        if self.size > 1:
+            node = self._get(key, self.root)
+            if node:
+                self._remove(node)
+                self.size -= 1
+            else:
+                raise KeyError('Key not found')
+        elif self.size == 1 and self.root.key == key:
+            self.root = None
+            self.size -= 1
+        else:
+            raise KeyError('Key not found')
+
+    def __delitem__(self, k):
+        self.delete(k)
+
+    def clean(self):
+        self.root = None
+        self.size = 0
+
+    def __repr__(self):
+        return str(self.root)
