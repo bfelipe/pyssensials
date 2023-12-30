@@ -287,3 +287,60 @@ class BinaryTreeTestCase(unittest.TestCase):
         assert bst[1] is None
         assert bst[2] is None
         assert bst[4] is None
+
+    def test_AVLTree(self):
+        avl = tree.AVLTree()
+        assert type(avl) is tree.AVLTree
+
+        assert avl.root is None
+        assert len(avl) == 0
+
+        avl.put(1, 'red')
+        avl.put(2, 'blue')
+        avl.put(3, 'green')
+
+        assert len(avl) == 3
+        assert avl.root is not None
+
+        assert avl.get(1) == 'red'
+        assert avl.get(2) == 'blue'
+        assert avl.get(3) == 'green'
+
+        assert avl.root.key == 2
+        assert avl.root.left_child.key == 1
+        assert avl.root.right_child.key == 3
+
+        avl.clean()
+        assert avl.root is None
+        assert len(avl) == 0
+
+        avl[1] = 'a'
+        avl[2] = 'b'
+        avl[3] = 'c'
+        avl[4] = 'd'
+        avl[5] = 'e'
+        avl[6] = 'f'
+
+        assert len(avl) == 6
+        assert avl.root is not None
+
+        assert avl.get(1) == 'a'
+        assert avl.get(2) == 'b'
+        assert avl.get(3) == 'c'
+        assert avl.get(4) == 'd'
+        assert avl.get(5) == 'e'
+        assert avl.get(6) == 'f'
+
+        assert avl.root.key == 4
+        assert avl.root.left_child.key == 2
+        assert avl.root.left_child.left_child.key == 1
+        assert avl.root.left_child.left_child.left_child is None
+        assert avl.root.left_child.left_child.right_child is None
+        assert avl.root.left_child.right_child.key == 3
+        assert avl.root.left_child.right_child.left_child is None
+        assert avl.root.left_child.right_child.right_child is None
+        assert avl.root.right_child.key == 5
+        assert avl.root.right_child.left_child is None
+        assert avl.root.right_child.right_child.key == 6
+        assert avl.root.right_child.right_child.left_child is None
+        assert avl.root.right_child.right_child.right_child is None
