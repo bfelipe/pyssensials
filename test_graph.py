@@ -96,3 +96,26 @@ class GraphTestCase(unittest.TestCase):
         assert alg.is_empty() is True
         assert alg.size() == 0
         assert alg.get_vertices() == []
+
+    def test_BFS(self):
+        word_table = {}
+        alg = graph.AdjacentListGraph()
+
+        with open('words.txt', 'r') as file:
+
+            for line in file:
+                word = line[:-1]
+                for idx in range(len(word)):
+                    bucket = f'{word[:idx]}_{word[idx + 1:]}'
+                    if bucket in word_table:
+                        word_table[bucket].append(word)
+                    else:
+                        word_table[bucket] = [word]
+
+            for bucket in word_table.keys():
+                for w1 in word_table[bucket]:
+                    for w2 in word_table[bucket]:
+                        if w1 != w2:
+                            alg.add_edge(w1, w2)
+
+        word_table.clear()
