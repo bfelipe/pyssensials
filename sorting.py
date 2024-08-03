@@ -142,3 +142,30 @@ def _swap(items, current_index, next_index):
     temp = items[current_index]
     items[current_index] = items[next_index]
     items[next_index] = temp
+
+
+def _heapify(data, heap_size, root_index):
+    largest_index = root_index
+    left = 2 * root_index + 1
+    right = 2 * root_index + 2
+
+    if left < heap_size and data[left] > data[largest_index]:
+        largest_index = left
+
+    if right < heap_size and data[right] > data[largest_index]:
+        largest_index = right
+
+    if largest_index != root_index:
+        data[root_index], data[largest_index] = data[largest_index], data[root_index]
+        _heapify(data, heap_size, largest_index)
+
+
+def heap_sort(data):
+    heap_size = len(data)
+
+    for start_index in range((heap_size//2)-1, -1, -1):
+        _heapify(data, heap_size, start_index)
+
+    for end_index in range(heap_size-1, 0, -1):
+        data[end_index], data[0] = data[0], data[end_index]
+        _heapify(data, end_index, 0)

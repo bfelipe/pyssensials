@@ -52,3 +52,10 @@ class SortingTestCase(unittest.TestCase):
         sorting.shell_sort(test_data)
         assert len(test_data) == len(expected)
         assert test_data == expected
+
+    def test_heap_sort(self):
+        test_data = [12, 3, 11, 13, 6, 5, 7]
+        excepted = [3, 5, 6, 7, 11, 12, 13]
+        sorting.heap_sort(test_data)
+        assert len(test_data) == len(excepted)
+        assert test_data == excepted
