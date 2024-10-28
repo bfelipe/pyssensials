@@ -30,3 +30,19 @@ class GraphTestCase(unittest.TestCase):
         assert m.groups(0) == 1
         assert m.short_distance(start=(0,0), end=(3,3), blocked=[1]) == 6
         assert m.short_distance(start=(0,0), end=(4,3), blocked=[1]) == -1
+
+    def test_AdjacentList(self):
+        empty_adjl = graph.AdjacentList()
+        assert empty_adjl.is_empty() is True
+        assert empty_adjl.vertex('A') == ('A', None)
+
+        adjl = graph.AdjacentList()
+        adjl.add_vertexes(vertexes=[("A", "B"), ("B", "C"),("B", "E"), ("C", "E"), ("E", "D")])
+        assert adjl.is_empty() is False
+        assert adjl.num_paths(origin='A', destination='E') == 2
+        assert adjl.num_paths(origin='A', destination='B') == 1
+        assert adjl.num_paths(origin='A', destination='F') == -1
+        assert adjl.short_distance(origin='A', destination='E') == 2
+        assert adjl.short_distance(origin='A', destination='B') == 1
+        assert adjl.short_distance(origin='B', destination='A') == -1
+        assert adjl.vertex('B') == ('B', ['C', 'E'])

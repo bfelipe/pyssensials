@@ -1,4 +1,5 @@
-from typing import Any, List, Tuple, Dict
+from typing import Any, List, Tuple
+from collections import defaultdict
 
 class Matrix:
     
@@ -111,5 +112,79 @@ class Matrix:
 
 class AdjacentList:
     
-    def __init__(self):
-        self.vertices: Dict[int,List[int]]
+    def __init__(self, edges:List[Tuple[Any, Any]]=None):
+        self.vertexes = defaultdict(list)
+        if edges:
+            self.add_vertexes(edges)
+
+    def add_vertexes(self, vertexes:List[Tuple[Any, Any]]):
+        # Vertex: Origin, Destination
+        for origin, destination in vertexes:
+            if origin not in self.vertexes:
+                self.vertexes[origin] = []
+            if destination not in vertexes:
+                self.vertexes[destination] = []
+            self.vertexes[origin].append(destination)
+    
+    def vertex(self, key:Any) -> Tuple[Any, List]:
+        return key, self.vertexes.get(key)
+    
+    def num_paths(self, origin:Any, destination:Any) -> int:
+        if origin not in self.vertexes or destination not in self.vertexes:
+            return -1
+        
+        visited = set()
+        
+        def dfs(vertex:Any) -> int:
+            if vertex in visited:
+                return 0
+            if vertex == destination:
+                return 1
+            
+            out = 0
+            visited.add(vertex)
+            for neighbor in self.vertexes.get(vertex):
+                out += dfs(neighbor)
+            visited.remove(vertex)
+            return out
+        
+        return dfs(origin)
+
+
+    def short_distance(self, origin:Any, destination:Any) -> int:
+        if origin not in self.vertexes or destination not in self.vertexes:
+            return -1
+        
+        queue = []
+        visited = set()
+        queue.append(origin)
+        visited.add(origin)
+
+        distance = 0
+
+        def bfs(vertex:Any):
+            if vertex in visited:
+                return
+            queue.append(vertex)
+            visited.add(vertex)
+
+        while queue:
+            for _ in range(len(queue)):
+                vertex = queue.pop(0)
+                if vertex == destination:
+                    return distance
+            
+                for neighbor in self.vertexes.get(vertex):
+                    bfs(neighbor)
+            distance += 1
+        return -1
+
+    def describe(self) -> None:
+        for k, v in self.vertexes.items():
+            print(f'vertex: %s, neighbors: %s' % (k, v))
+
+    def is_empty(self):
+        return self.vertexes == {}
+
+    def __repr__(self) -> str:
+        return '<AdjacentList vertexes: %s>' % (list(self.vertexes.keys()))
